@@ -145,7 +145,7 @@ const Portfolio = () => {
       description: "AI-powered NDPR/NDPA compliance analysis platform for Nigerian businesses using Google Gemini. Features privacy policy analysis, citizen action validation, and quick compliance checks with actionable remediation steps.",
       technologies: ['Python', 'FastAPI', 'Google Gemini AI', 'Uvicorn', 'Pydantic'],
       link: 'https://trustbridge-ai.onrender.com/',
-      gradient: 'from-blue-500 to-purple-700'
+      gradient: 'from-yellow-500 to-orange-700'
     }
 
   ];
