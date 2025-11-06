@@ -144,7 +144,7 @@ const Portfolio = () => {
       title: "TrustBridge AI-Legal Engine",
       description: "AI-powered NDPR/NDPA compliance analysis platform for Nigerian businesses using Google Gemini. Features privacy policy analysis, citizen action validation, and quick compliance checks with actionable remediation steps.",
       technologies: ['Python', 'FastAPI', 'Google Gemini AI', 'Uvicorn', 'Pydantic'],
-      link: 'https://trustbridge-ai.onrender.com/',
+      link: 'https://trustbridge-ai.onrender.com/docs/',
       gradient: 'from-yellow-500 to-orange-700'
     }
 
