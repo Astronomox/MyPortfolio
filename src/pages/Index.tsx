@@ -139,6 +139,15 @@ const Portfolio = () => {
       link: 'https://my-portfolio-gamma-seven-dwq1vpin45.vercel.app/',
       gradient: 'from-gray-500 to-gray-700'
     }
+    {
+      id: 7,
+      title: "TrustBridge AI-Legal Engine",
+      description: "AI-powered NDPR/NDPA compliance analysis platform for Nigerian businesses using Google Gemini. Features privacy policy analysis, citizen action validation, and quick compliance checks with actionable remediation steps.",
+      technologies: ['Python', 'FastAPI', 'Google Gemini AI', 'Uvicorn', 'Pydantic'],
+      link: 'https://trustbridge-ai.onrender.com/',
+      gradient: 'from-blue-500 to-purple-700'
+    }
+
   ];
 
   const skills = [
@@ -151,9 +160,9 @@ const Portfolio = () => {
     { name: 'React', color: 'bg-cyan-400', textColor: 'text-gray-900' },
     { name: 'JavaScript', color: 'bg-yellow-400', textColor: 'text-gray-900' },
     { name: 'HTML', color: 'bg-orange-500', textColor: 'text-white' },
-    { name: 'CSS', color: 'bg-blue-700', textColor: 'text-white' },
+    { name: 'AI Creation', color: 'bg-blue-700', textColor: 'text-white' },
     { name: 'AWS', color: 'bg-orange-400', textColor: 'text-gray-900' },
-    { name: 'Git', color: 'bg-red-500', textColor: 'text-white' }
+    { name: 'FastAPI', color: 'bg-red-500', textColor: 'text-white' }
   ];
 
   useEffect(() => {
