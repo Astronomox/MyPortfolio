@@ -138,7 +138,7 @@ const Portfolio = () => {
       technologies: ['React', 'TypeScript', 'Tailwind CSS', 'EmailJS'],
       link: 'https://my-portfolio-gamma-seven-dwq1vpin45.vercel.app/',
       gradient: 'from-gray-500 to-gray-700'
-    }
+    },
     {
       id: 7,
       title: "TrustBridge AI-Legal Engine",
