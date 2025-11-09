@@ -147,6 +147,14 @@ const Portfolio = () => {
       link: 'https://trustbridge-ai.onrender.com/docs/',
       gradient: 'from-yellow-500 to-orange-700'
     }
+    {
+      id: 8,
+      title: "Flashcard App",
+      description: "Interactive flashcard study application with subject-based organization, progress tracking, and flip animations for effective learning and retention.",
+      technologies: ['React', 'TypeScript', 'Vite', 'Shadcn UI', 'Tailwind CSS'],
+      link: 'https://flashcard-app-navy-sigma.vercel.app/',
+      gradient: 'from-indigo-500 to-violet-600'
+    }
 
   ];
 
