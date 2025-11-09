@@ -146,7 +146,7 @@ const Portfolio = () => {
       technologies: ['Python', 'FastAPI', 'Google Gemini AI', 'Uvicorn', 'Pydantic'],
       link: 'https://trustbridge-ai.onrender.com/docs/',
       gradient: 'from-yellow-500 to-orange-700'
-    }
+    },
     {
       id: 8,
       title: "Flashcard App",
