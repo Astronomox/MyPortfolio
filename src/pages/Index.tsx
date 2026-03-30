@@ -1,877 +1,793 @@
-import { useState, useEffect } from 'react';
-import { MadeWithDyad } from '@/components/made-with-dyad';
-import { Github, Linkedin, Twitter, Instagram } from 'lucide-react';
-import { toast } from 'react-hot-toast';
-import emailjs from 'emailjs-com';
-import { motion, AnimatePresence } from 'framer-motion';
 
-const Portfolio = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdullahi Oriola — Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#050505;
+  --surface:#0d0d0d;
+  --surface2:#141414;
+  --surface3:#1a1a1a;
+  --border:#1f1f1f;
+  --border2:#2a2a2a;
+  --text:#f0ede8;
+  --text2:#8a8580;
+  --text3:#4a4745;
+  --accent:#c8b89a;
+  --accent2:#a89070;
+  --green:#3d6b4f;
+  --green-light:#6dab85;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--black);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--border2)}
 
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
+/* CURSOR */
+*{cursor:none}
+#cursor{
+  position:fixed;width:8px;height:8px;
+  background:var(--accent);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transition:transform 0.15s ease,opacity 0.15s ease;
+  transform:translate(-50%,-50%);
+}
+#cursor-ring{
+  position:fixed;width:32px;height:32px;
+  border:1px solid var(--accent2);
+  border-radius:50%;pointer-events:none;z-index:9998;
+  transition:transform 0.08s ease,width 0.2s ease,height 0.2s ease,opacity 0.2s ease;
+  transform:translate(-50%,-50%);
+  opacity:0.5;
+}
 
-  const slideInLeft = {
-    hidden: { x: -50, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:20px 48px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid transparent;
+  transition:border-color 0.3s,background 0.3s;
+}
+nav.scrolled{
+  background:rgba(5,5,5,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom-color:var(--border);
+}
+.nav-logo{
+  font-family:'Syne',sans-serif;
+  font-weight:700;font-size:16px;
+  letter-spacing:0.05em;
+  text-decoration:none;
+  color:var(--text);
+}
+.nav-links{display:flex;gap:40px;list-style:none}
+.nav-links a{
+  font-size:13px;letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text2);text-decoration:none;
+  transition:color 0.2s;
+  font-weight:500;
+}
+.nav-links a:hover{color:var(--text)}
+.nav-status{
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--text2);
+}
+.status-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green-light);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.4}
+}
 
-  const slideInRight = {
-    hidden: { x: 50, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
+/* HERO */
+#hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:120px 48px 80px;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 70% 50%, rgba(200,184,154,0.04) 0%, transparent 70%);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:80px 80px;
+  opacity:0.3;
+  mask-image:radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+.hero-content{max-width:1200px;width:100%;margin:0 auto;position:relative;z-index:1}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;
+  font-size:11px;letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--accent);
+  border:1px solid var(--border2);
+  padding:6px 14px;border-radius:2px;
+  margin-bottom:48px;
+}
+.hero-tag::before{content:'◆';font-size:7px}
+h1{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(52px,7vw,96px);
+  font-weight:800;line-height:0.95;
+  letter-spacing:-0.03em;
+  margin-bottom:32px;
+}
+h1 span{color:var(--accent)}
+.hero-desc{
+  font-size:17px;
+  color:var(--text2);
+  max-width:520px;
+  line-height:1.8;
+  margin-bottom:56px;
+}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--accent);
+  color:var(--black);
+  font-weight:600;font-size:13px;
+  letter-spacing:0.06em;text-transform:uppercase;
+  padding:14px 28px;border-radius:2px;
+  text-decoration:none;border:none;
+  transition:all 0.2s;
+}
+.btn-primary:hover{background:var(--text);transform:translateY(-2px)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:10px;
+  color:var(--text2);
+  font-size:13px;letter-spacing:0.06em;text-transform:uppercase;
+  padding:14px 28px;border-radius:2px;
+  text-decoration:none;
+  border:1px solid var(--border2);
+  transition:all 0.2s;
+}
+.btn-ghost:hover{color:var(--text);border-color:var(--text3)}
+.hero-scroll{
+  position:absolute;bottom:40px;left:48px;
+  display:flex;align-items:center;gap:12px;
+  font-family:'DM Mono',monospace;
+  font-size:11px;letter-spacing:0.1em;
+  color:var(--text3);text-transform:uppercase;
+}
+.scroll-line{width:40px;height:1px;background:var(--text3)}
 
-  const scaleUp = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "backOut"
-      }
-    }
-  };
+/* SECTIONS */
+section{padding:120px 48px}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-label{
+  font-family:'DM Mono',monospace;
+  font-size:11px;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:16px;
+  display:flex;align-items:center;gap:12px;
+}
+.section-label::after{content:'';flex:0 0 40px;height:1px;background:var(--accent)}
+h2{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(36px,4vw,56px);
+  font-weight:800;line-height:1;
+  letter-spacing:-0.02em;
+  margin-bottom:64px;
+}
 
-  // Social media links
-  const socialLinks = {
-    github: 'https://github.com/Astronomox',
-    linkedin: 'https://www.linkedin.com/in/abdullahi-oriola-63459b2a7/',
-    twitter: 'https://x.com/Astro2theworld',
-    instagram: 'https://www.instagram.com/xyberpunkgt/'
-  };
+/* ABOUT */
+#about{background:var(--surface)}
+.about-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:80px;align-items:start}
+.about-left{}
+.about-photo-frame{
+  aspect-ratio:3/4;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  margin-bottom:32px;
+}
+.about-photo-frame::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom, transparent 60%, var(--surface) 100%);
+}
+.about-photo-frame img{
+  width:100%;height:100%;object-fit:cover;
+  filter:grayscale(20%) contrast(1.05);
+}
+.about-photo-placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;
+}
+.about-meta{display:flex;flex-direction:column;gap:12px}
+.meta-item{
+  display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.meta-label{color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase}
+.meta-value{color:var(--text2)}
+.about-right{}
+.about-text{
+  font-size:16px;color:var(--text2);
+  line-height:1.9;margin-bottom:24px;
+}
+.about-text strong{color:var(--text);font-weight:500}
+.skills-heading{
+  font-family:'DM Mono',monospace;font-size:11px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--text3);margin:48px 0 20px;
+}
+.skills-grid{display:flex;flex-wrap:wrap;gap:8px}
+.skill-tag{
+  font-family:'DM Mono',monospace;
+  font-size:12px;letter-spacing:0.05em;
+  color:var(--text2);
+  padding:6px 14px;
+  border:1px solid var(--border2);
+  border-radius:2px;
+  transition:all 0.2s;
+}
+.skill-tag:hover{color:var(--text);border-color:var(--text3)}
 
-  // EmailJS Configuration
-  const EMAILJS_CONFIG = {
-    SERVICE_ID: 'service_jwxd0co',
-    TEMPLATE_ID: 'template_60wvnzt',
-    PUBLIC_KEY: 'ndqVQL5a4jQKAgomK'
-  };
+/* PROJECTS */
+#projects{background:var(--black)}
+.projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.project-card{
+  background:var(--black);
+  padding:48px;
+  transition:background 0.3s;
+  position:relative;overflow:hidden;
+}
+.project-card:hover{background:var(--surface)}
+.project-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg, var(--accent), transparent);
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 0.4s ease;
+}
+.project-card:hover::before{transform:scaleX(1)}
+.project-num{
+  font-family:'DM Mono',monospace;
+  font-size:11px;letter-spacing:0.1em;
+  color:var(--text3);
+  margin-bottom:24px;
+}
+.project-title{
+  font-family:'Syne',sans-serif;
+  font-size:24px;font-weight:700;
+  line-height:1.1;
+  margin-bottom:16px;
+  color:var(--text);
+}
+.project-desc{
+  font-size:14px;color:var(--text2);
+  line-height:1.8;margin-bottom:28px;
+}
+.project-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:32px}
+.project-tag{
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--accent2);
+  padding:4px 10px;
+  border:1px solid var(--border2);
+  border-radius:2px;
+}
+.project-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;
+  color:var(--text2);text-decoration:none;
+  letter-spacing:0.05em;
+  transition:color 0.2s;
+}
+.project-link:hover{color:var(--accent)}
+.project-link svg{transition:transform 0.2s}
+.project-link:hover svg{transform:translate(2px,-2px)}
 
-  // Projects data
-  const projects = [
-    {
-      id: 1,
-      title: "TechTitans AWS 2.0",
-      description: "A comprehensive cloud platform built with AWS services, featuring scalable infrastructure and modern web technologies.",
-      technologies: ['AWS', 'React', 'Node.js', 'TypeScript', 'Tailwind CSS'],
-      link: 'https://tech-titans-aws-2-0.vercel.app/',
-      gradient: 'from-blue-500 to-purple-600'
-    },
-    {
-      id: 2,
-      title: "Notepad",
-      description: "A sleek, responsive note-taking application with real-time editing and local storage capabilities.",
-      technologies: ['React', 'JavaScript', 'CSS3', 'Local Storage'],
-      link: 'https://notepad-rose.vercel.app/',
-      gradient: 'from-green-500 to-teal-600'
-    },
-    {
-      id: 3,
-      title: "Dictionary App",
-      description: "Interactive dictionary application with word definitions, pronunciations, and search functionality.",
-      technologies: ['JavaScript', 'API Integration', 'CSS3', 'HTML5'],
-      link: 'https://dictionary-app-flame-alpha.vercel.app/',
-      gradient: 'from-orange-500 to-red-600'
-    },
-    {
-      id: 4,
-      title: "Weather Dashboard",
-      description: "Real-time weather forecasting application with location-based data and beautiful UI design.",
-      technologies: ['React', 'Weather API', 'JavaScript', 'Tailwind CSS'],
-      link: 'https://weather-dashboard-tan-eight.vercel.app/',
-      gradient: 'from-cyan-500 to-blue-600'
-    },
-    {
-      id: 5,
-      title: "Image-Compressor",
-      description: "Web-based image compression tool that reduces file size while maintaining quality.",
-      technologies: ['JavaScript', 'Image Processing', 'HTML5', 'CSS3'],
-      link: 'https://image-compressor-smoky.vercel.app/',
-      gradient: 'from-purple-500 to-pink-600'
-    },
-    {
-      id: 6,
-      title: "Portfolio",
-      description: "Responsive portfolio website showcasing my projects and skills with modern design and contact functionality.",
-      technologies: ['React', 'TypeScript', 'Tailwind CSS', 'EmailJS'],
-      link: 'https://my-portfolio-gamma-seven-dwq1vpin45.vercel.app/',
-      gradient: 'from-gray-500 to-gray-700'
-    },
-    {
-      id: 7,
-      title: "TrustBridge AI-Legal Engine",
-      description: "AI-powered NDPR/NDPA compliance analysis platform for Nigerian businesses using Google Gemini. Features privacy policy analysis, citizen action validation, and quick compliance checks with actionable remediation steps.",
-      technologies: ['Python', 'FastAPI', 'Google Gemini AI', 'Uvicorn', 'Pydantic'],
-      link: 'https://trustbridge-ai.onrender.com/docs/',
-      gradient: 'from-yellow-500 to-orange-700'
-    },
-    {
-      id: 8,
-      title: "Flashcard App",
-      description: "Interactive flashcard study application with subject-based organization, progress tracking, and flip animations for effective learning and retention.",
-      technologies: ['React', 'TypeScript', 'Vite', 'Shadcn UI', 'Tailwind CSS'],
-      link: 'https://flashcard-app-navy-sigma.vercel.app/',
-      gradient: 'from-indigo-500 to-violet-600'
-    }
+/* EXPERIENCE */
+#experience{background:var(--surface)}
+.exp-list{display:flex;flex-direction:column;gap:0}
+.exp-item{
+  display:grid;grid-template-columns:200px 1fr;gap:48px;
+  padding:48px 0;border-bottom:1px solid var(--border);
+}
+.exp-item:first-child{border-top:1px solid var(--border)}
+.exp-time{
+  font-family:'DM Mono',monospace;
+  font-size:12px;color:var(--text3);
+  letter-spacing:0.05em;
+  padding-top:4px;
+}
+.exp-content{}
+.exp-role{
+  font-family:'Syne',sans-serif;
+  font-size:20px;font-weight:700;
+  margin-bottom:4px;
+}
+.exp-company{
+  font-size:14px;color:var(--accent);
+  margin-bottom:16px;font-weight:500;
+}
+.exp-desc{font-size:14px;color:var(--text2);line-height:1.8}
 
-  ];
+/* CONTACT */
+#contact{background:var(--black)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.contact-left{}
+.contact-intro{font-size:16px;color:var(--text2);line-height:1.9;margin-bottom:48px}
+.contact-links{display:flex;flex-direction:column;gap:0}
+.contact-link{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 0;border-bottom:1px solid var(--border);
+  text-decoration:none;color:var(--text2);
+  font-size:14px;
+  transition:color 0.2s;
+  group:hover;
+}
+.contact-link:first-child{border-top:1px solid var(--border)}
+.contact-link:hover{color:var(--text)}
+.contact-link-label{font-weight:500}
+.contact-link-value{
+  font-family:'DM Mono',monospace;font-size:12px;
+  color:var(--text3);
+}
+.contact-link:hover .contact-link-value{color:var(--accent)}
+.contact-right{}
+.form-group{margin-bottom:24px}
+.form-label{
+  display:block;
+  font-family:'DM Mono',monospace;
+  font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px;
+}
+.form-input,.form-textarea{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border2);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:14px;
+  padding:14px 18px;border-radius:2px;
+  transition:border-color 0.2s;
+  outline:none;resize:none;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent2)}
+.form-textarea{height:140px}
+.form-submit{
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  font-size:14px;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:16px;border-radius:2px;
+  transition:all 0.2s;
+}
+.form-submit:hover{background:var(--accent);color:var(--black);border-color:var(--accent)}
 
-  const skills = [
-    { name: 'Python', color: 'bg-blue-500', textColor: 'text-white' },
-    { name: 'Django', color: 'bg-green-600', textColor: 'text-white' },
-    { name: 'Node.js', color: 'bg-green-500', textColor: 'text-white' },
-    { name: 'TypeScript', color: 'bg-blue-600', textColor: 'text-white' },
-    { name: 'Tailwind CSS', color: 'bg-cyan-500', textColor: 'text-white' },
-    { name: 'Tkinter', color: 'bg-yellow-500', textColor: 'text-gray-900' },
-    { name: 'React', color: 'bg-cyan-400', textColor: 'text-gray-900' },
-    { name: 'JavaScript', color: 'bg-yellow-400', textColor: 'text-gray-900' },
-    { name: 'HTML', color: 'bg-orange-500', textColor: 'text-white' },
-    { name: 'AI Creation', color: 'bg-blue-700', textColor: 'text-white' },
-    { name: 'AWS', color: 'bg-orange-400', textColor: 'text-gray-900' },
-    { name: 'FastAPI', color: 'bg-red-500', textColor: 'text-white' }
-  ];
+/* FOOTER */
+footer{
+  background:var(--surface);
+  padding:48px;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.footer-left{
+  font-family:'DM Mono',monospace;
+  font-size:12px;color:var(--text3);letter-spacing:0.05em;
+}
+.footer-links{display:flex;gap:32px}
+.footer-links a{
+  font-size:12px;color:var(--text3);text-decoration:none;
+  transition:color 0.2s;letter-spacing:0.05em;
+}
+.footer-links a:hover{color:var(--accent)}
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['home', 'about', 'projects', 'contact'];
-      const scrollPosition = window.scrollY + 100;
+/* ANIMATIONS */
+.reveal{
+  opacity:0;transform:translateY(30px);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
 
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const offsetTop = element.offsetTop;
-          const height = element.offsetHeight;
+/* MOBILE */
+@media(max-width:768px){
+  nav{padding:16px 24px}
+  .nav-links,.nav-status{display:none}
+  section{padding:80px 24px}
+  #hero{padding:100px 24px 60px}
+  h1{font-size:48px}
+  .about-grid{grid-template-columns:1fr}
+  .projects-grid{grid-template-columns:1fr}
+  .project-card{padding:32px 24px}
+  .exp-item{grid-template-columns:1fr;gap:12px}
+  .contact-grid{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:24px;padding:32px 24px;text-align:center}
+}
+</style>
+</head>
+<body>
 
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">A.O.</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Work</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    Available for work
+  </div>
+</nav>
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
-    }
-  };
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      toast.success(`${label} copied to clipboard!`, {
-        duration: 2000,
-        position: 'bottom-center',
-      });
-    });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Please fill in all fields', {
-        duration: 3000,
-        position: 'bottom-center',
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const templateParams = {
-      from_name: formData.name,
-      from_email: formData.email,
-      message: formData.message,
-      reply_to: formData.email,
-      to_email: 'abdullahioriola02@gmail.com'
-    };
-
-    emailjs.send(
-      EMAILJS_CONFIG.SERVICE_ID,
-      EMAILJS_CONFIG.TEMPLATE_ID,
-      templateParams,
-      EMAILJS_CONFIG.PUBLIC_KEY
-    )
-      .then((result) => {
-        console.log('Email sent successfully:', result.text);
-        toast.success('Message sent successfully! I\'ll get back to you soon.', {
-          duration: 4000,
-          position: 'bottom-center',
-        });
-        setFormData({
-          name: '',
-          email: '',
-          message: ''
-        });
-      }, (error) => {
-        console.error('EmailJS error:', error);
-        console.error('Error details:', error.text);
-        toast.error('Failed to send via form. Opening email client instead...', {
-          duration: 3000,
-          position: 'bottom-center',
-        });
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 overflow-x-hidden">
-      {/* Navigation */}
-      <motion.nav 
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <motion.span 
-                whileHover={{ scale: 1.05 }}
-                className="text-xl font-bold text-gray-900 cursor-pointer"
-              >
-                Oriola Abdullahi, Adeola
-              </motion.span>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              {['home', 'about', 'projects', 'contact'].map((item) => (
-                <motion.button
-                  key={item}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => scrollToSection(item)}
-                  className={`capitalize transition-colors duration-200 ${activeSection === item
-                    ? 'text-blue-600 font-medium'
-                    : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                >
-                  {item}
-                </motion.button>
-              ))}
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden flex items-center">
-              <motion.button
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-600 hover:text-gray-900 focus:outline-none"
-              >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {isMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </motion.button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden bg-white border-t overflow-hidden"
-            >
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                {['home', 'about', 'projects', 'contact'].map((item) => (
-                  <motion.button
-                    key={item}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => scrollToSection(item)}
-                    className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left capitalize ${activeSection === item
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                  >
-                    {item}
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
-
-      {/* Hero Section */}
-      <section id="home" className="pt-24 pb-20 md:pt-32 md:pb-28 px-4 relative overflow-hidden">
-        {/* Background Image */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.1 }}
-          transition={{ duration: 1.5 }}
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/Screenshot 2025-10-19 044014.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center'
-          }}
-        ></motion.div>
-
-        {/* Animated background elements */}
-        <motion.div
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 5, 0]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-1/4 left-10 w-4 h-4 bg-blue-500 rounded-full opacity-20"
-        />
-        <motion.div
-          animate={{
-            y: [0, 30, 0],
-            rotate: [0, -5, 0]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-          className="absolute bottom-1/4 right-10 w-6 h-6 bg-purple-500 rounded-full opacity-20"
-        />
-
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
-          className="max-w-7xl mx-auto relative z-10 text-center"
-        >
-          <motion.h1 variants={itemVariants} className="text-4xl md:text-6xl font-bold mb-6">
-            Hi, I'm <motion.span 
-              className="text-blue-600"
-              animate={{
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-              style={{
-                background: "linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6)",
-                backgroundSize: "300% 100%",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text"
-              }}
-            >
-              Oriola Abdullahi Adeola
-            </motion.span>
-          </motion.h1>
-          
-          <motion.p variants={itemVariants} className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">
-            A passionate full stack developer creating robust and scalable web applications
-          </motion.p>
-          
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollToSection('projects')}
-              className="px-8 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-lg"
-            >
-              View My Work
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollToSection('contact')}
-              className="px-8 py-3 bg-white text-blue-600 border border-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors duration-300 shadow-lg"
-            >
-              Contact Me
-            </motion.button>
-          </motion.div>
-        </motion.div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-20 bg-white px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
-            <motion.div 
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="h-1 bg-blue-600 mx-auto"
-            ></motion.div>
-          </motion.div>
-          
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              variants={slideInLeft}
-              viewport={{ once: true, margin: "-50px" }}
-              className="md:w-1/3"
-            >
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="rounded-xl w-full h-96 flex items-center justify-center overflow-hidden shadow-2xl"
-              >
-                <motion.img 
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.5 }}
-                  src="/WIN_20250308_13_40_14_Pro.png" 
-                  alt="Oriola Abdullahi Adeola - Full Stack Developer" 
-                  className="w-full h-full object-cover rounded-xl"
-                />
-              </motion.div>
-            </motion.div>
-            
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              variants={slideInRight}
-              viewport={{ once: true, margin: "-50px" }}
-              className="md:w-2/3"
-            >
-              <motion.h3 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                viewport={{ once: true }}
-                className="text-2xl font-semibold mb-4"
-              >
-                Full Stack Developer
-              </motion.h3>
-              
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                variants={containerVariants}
-                viewport={{ once: true }}
-              >
-                <motion.p variants={itemVariants} className="text-gray-600 mb-6">
-                  A passionate Python developer with one year of experience building web applications from the ground up.
-                  I specialize in creating efficient, scalable solutions using modern technologies.
-                </motion.p>
-                <motion.p variants={itemVariants} className="text-gray-600 mb-6">
-                  While I have no formal experience, I'm highly motivated and have a strong portfolio of personal projects. I've recently started my journey into full-stack development, getting a firm grasp of Node.js and React.js to create modern web applications.
-                </motion.p>
-                <motion.p variants={itemVariants} className="text-gray-600 mb-8">
-                  My approach combines technical expertise with an eye for design, ensuring that every project
-                  I work on is both functional and visually appealing.
-                </motion.p>
-              </motion.div>
-
-              <motion.div 
-                initial="hidden"
-                whileInView="visible"
-                variants={containerVariants}
-                viewport={{ once: true }}
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
-              >
-                {skills.map((skill, index) => (
-                  <motion.div
-                    key={skill.name}
-                    variants={itemVariants}
-                    whileHover={{ 
-                      scale: 1.1, 
-                      y: -5,
-                      rotate: [0, -2, 2, 0],
-                      transition: { duration: 0.3 }
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`${skill.color} ${skill.textColor} px-3 py-2 rounded-lg text-center font-medium shadow-md hover:shadow-xl transition-all duration-300 cursor-default`}
-                  >
-                    {skill.name}
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">My Projects</h2>
-            <motion.div 
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="h-1 bg-blue-600 mx-auto"
-            ></motion.div>
-          </motion.div>
-          
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true, margin: "-50px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {projects.map((project) => (
-              <motion.div
-                key={project.id}
-                variants={scaleUp}
-                whileHover={{ 
-                  y: -10,
-                  transition: { duration: 0.3 }
-                }}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group"
-              >
-                <motion.div 
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
-                  className={`w-full h-48 bg-gradient-to-br ${project.gradient} flex items-center justify-center relative overflow-hidden`}
-                >
-                  <span className="text-white font-bold text-lg z-10">{project.title.split(' ')[0]}</span>
-                  <motion.div
-                    className="absolute inset-0 bg-black/20"
-                    whileHover={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-                  <p className="text-gray-600 mb-4">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.map((tech) => (
-                      <motion.span 
-                        key={tech}
-                        whileHover={{ scale: 1.1 }}
-                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-                      >
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.05, x: 5 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => window.open(project.link, '_blank')}
-                    className="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center gap-1"
-                  >
-                    View Project 
-                    <motion.span
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      →
-                    </motion.span>
-                  </motion.button>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-20 bg-white px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Get In Touch</h2>
-            <motion.div 
-              initial={{ width: 0 }}
-              whileInView={{ width: 80 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="h-1 bg-blue-600 mx-auto"
-            ></motion.div>
-          </motion.div>
-          
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true, margin: "-50px" }}
-            className="flex flex-col md:flex-row gap-12"
-          >
-            <motion.div variants={slideInLeft} className="md:w-1/2">
-              <h3 className="text-2xl font-semibold mb-6">Let's talk about your project</h3>
-              <p className="text-gray-600 mb-8">
-                I'm currently available for freelance work and full-time opportunities. Feel free to reach out if you want to collaborate
-                or just say hello!
-              </p>
-
-              <div className="space-y-4">
-                <motion.div 
-                  whileHover={{ x: 10 }}
-                  className="flex items-center cursor-pointer group"
-                  onClick={() => copyToClipboard('abdullahioriola02@gmail.com', 'Email')}
-                >
-                  <motion.div 
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-blue-100 p-3 rounded-full mr-4 group-hover:bg-blue-200 transition-colors"
-                  >
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                    </svg>
-                  </motion.div>
-                  <span className="group-hover:text-blue-600 transition-colors">
-                    abdullahioriola02@gmail.com
-                  </span>
-                </motion.div>
-
-                <motion.div 
-                  whileHover={{ x: 10 }}
-                  className="flex items-center cursor-pointer group"
-                  onClick={() => copyToClipboard('+2347037499375', 'Phone number')}
-                >
-                  <motion.div 
-                    whileHover={{ scale: 1.1 }}
-                    className="bg-blue-100 p-3 rounded-full mr-4 group-hover:bg-blue-200 transition-colors"
-                  >
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                    </svg>
-                  </motion.div>
-                  <span className="group-hover:text-blue-600 transition-colors">
-                    +234 703 749 9375
-                  </span>
-                </motion.div>
-
-                <motion.div 
-                  whileHover={{ x: 10 }}
-                  className="flex items-center"
-                >
-                  <div className="bg-blue-100 p-3 rounded-full mr-4">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                  </div>
-                  <span>Lagos, Nigeria</span>
-                </motion.div>
-              </div>
-            </motion.div>
-
-            <motion.div variants={slideInRight} className="md:w-1/2">
-              <motion.form 
-                initial="hidden"
-                whileInView="visible"
-                variants={containerVariants}
-                viewport={{ once: true }}
-                className="space-y-6"
-                onSubmit={handleSubmit}
-              >
-                <motion.div variants={itemVariants}>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                  <motion.input
-                    whileFocus={{ scale: 1.02 }}
-                    type="text"
-                    id="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
-                    placeholder="Your name"
-                    required
-                  />
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                  <motion.input
-                    whileFocus={{ scale: 1.02 }}
-                    type="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
-                    placeholder="your.email@example.com"
-                    required
-                  />
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                  <motion.textarea
-                    whileFocus={{ scale: 1.02 }}
-                    id="message"
-                    rows={4}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
-                    placeholder="Your message here..."
-                    required
-                  ></motion.textarea>
-                </motion.div>
-
-                <motion.div variants={itemVariants} className="flex gap-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`flex-1 px-6 py-3 font-medium rounded-lg transition-colors duration-300 ${isSubmitting
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                      }`}
-                  >
-                    {isSubmitting ? (
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      >
-                        ⏳
-                      </motion.span>
-                    ) : (
-                      'Send Message'
-                    )}
-                  </motion.button>
-                </motion.div>
-              </motion.form>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <motion.footer 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="bg-gray-900 text-white py-12 px-4"
-      >
-        <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            variants={containerVariants}
-            viewport={{ once: true }}
-            className="flex flex-col md:flex-row justify-between items-center"
-          >
-            <motion.div variants={itemVariants} className="mb-6 md:mb-0">
-              <span className="text-xl font-bold">Oriola Abdullahi Adeola</span>
-              <p className="mt-2 text-gray-400">Full Stack Developer</p>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="flex space-x-6">
-              {Object.entries(socialLinks).map(([platform, url]) => (
-                <motion.a
-                  key={platform}
-                  whileHover={{ scale: 1.2, y: -2 }}
-                  whileTap={{ scale: 0.9 }}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
-                  aria-label={platform}
-                >
-                  {platform === 'github' && <Github className="w-6 h-6" />}
-                  {platform === 'linkedin' && <Linkedin className="w-6 h-6" />}
-                  {platform === 'twitter' && <Twitter className="w-6 h-6" />}
-                  {platform === 'instagram' && <Instagram className="w-6 h-6" />}
-                </motion.a>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400"
-          >
-            <p>&copy; {new Date().getFullYear()} Oriola Abdullahi Adeola. All rights reserved.</p>
-          </motion.div>
-        </div>
-      </motion.footer>
-
-      <MadeWithDyad />
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Full-Stack Developer · Lagos, Nigeria</div>
+    <h1>
+      Abdullahi<br>
+      <span>Oriola</span><br>
+      Adeola
+    </h1>
+    <p class="hero-desc">
+      I build AI-powered products and production web applications that solve real problems. Data Science student at UNILAG. Head of Technology at Ventics AI.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">
+        View Work
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#contact" class="btn-ghost">Get in touch</a>
     </div>
-  );
-};
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
 
-export default Portfolio;
+<section id="about">
+  <div class="section-inner">
+    <div class="section-label">01 — About</div>
+    <div class="about-grid">
+      <div class="about-left reveal">
+        <div class="about-photo-frame">
+          <div class="about-photo-placeholder">[ photo ]</div>
+        </div>
+        <div class="about-meta">
+          <div class="meta-item">
+            <span class="meta-label">Based in</span>
+            <span class="meta-value">Lagos, Nigeria</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Education</span>
+            <span class="meta-value">UNILAG · Data Science</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Role</span>
+            <span class="meta-value">Head of Tech @ Ventics AI</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">GitHub</span>
+            <span class="meta-value">Astronomox</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-right">
+        <h2 class="reveal">Building things<br>that matter.</h2>
+        <p class="about-text reveal reveal-delay-1">
+          I started with Python because I wanted to automate things. That turned into building full web applications, then AI integrations, then leading the technical side of a startup. <strong>I did not learn to code to pass exams.</strong>
+        </p>
+        <p class="about-text reveal reveal-delay-2">
+          Every project in my portfolio started as a real problem I noticed — people who couldn't afford a dermatologist, students drowning in WhatsApp group announcements, young Nigerians with skills and no structured way to earn from them. <strong>I built for those people.</strong>
+        </p>
+        <p class="about-text reveal reveal-delay-3">
+          Currently serving as Head of Technology at Ventics AI, an AI interior design platform with 300+ designs generated and a 4.8-star satisfaction rating. Also a Data Science student at the University of Lagos.
+        </p>
+        <div class="skills-heading">Technical Skills</div>
+        <div class="skills-grid reveal">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Next.js</span>
+          <span class="skill-tag">Angular</span>
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Django</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">Supabase</span>
+          <span class="skill-tag">Firebase</span>
+          <span class="skill-tag">Tailwind CSS</span>
+          <span class="skill-tag">Gemini AI</span>
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">Docker</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-inner">
+    <div class="section-label">02 — Selected Work</div>
+    <h2 class="reveal">Things I've<br>shipped.</h2>
+    <div class="projects-grid reveal">
+
+      <div class="project-card">
+        <div class="project-num">001</div>
+        <div class="project-title">Dermaflow AI</div>
+        <p class="project-desc">AI-powered skin health diagnostic platform. Upload a photo, get instant analysis with heatmap explainability showing exactly why the AI reached its conclusion. Includes a medical-trained Bio-LLM chatbot and an oncology triage system that generates referral cards.</p>
+        <div class="project-tags">
+          <span class="project-tag">Next.js</span>
+          <span class="project-tag">Gemini AI</span>
+          <span class="project-tag">Python</span>
+          <span class="project-tag">Healthcare</span>
+        </div>
+        <a href="https://dermaflow-zeta.vercel.app/" target="_blank" class="project-link">
+          Live Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">002</div>
+        <div class="project-title">MonieFlow</div>
+        <p class="project-desc">AI gig platform built specifically for young Nigerians. FairMatch™ engine connects workers to fair-paying gigs based on skills and location. Instant payments to a MonieFlow wallet, escrow-based trust system, and micro-upskilling in 2-minute AI-powered lessons.</p>
+        <div class="project-tags">
+          <span class="project-tag">Next.js</span>
+          <span class="project-tag">Firebase</span>
+          <span class="project-tag">Gemini AI</span>
+          <span class="project-tag">Fintech</span>
+        </div>
+        <a href="https://monieflow-spark.vercel.app/" target="_blank" class="project-link">
+          Live Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">003</div>
+        <div class="project-title">DataFlix</div>
+        <p class="project-desc">Full university student portal with role-based access control. Two-tier admin system with department and academic-level content filtering — a 100-level Engineering student only sees content relevant to them. AI assistant "Flixy" powered by Gemini gives daily briefings.</p>
+        <div class="project-tags">
+          <span class="project-tag">Angular</span>
+          <span class="project-tag">Supabase</span>
+          <span class="project-tag">Gemini AI</span>
+          <span class="project-tag">RBAC</span>
+        </div>
+        <a href="https://data-flix-wqe3.vercel.app/" target="_blank" class="project-link">
+          Live Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">004</div>
+        <div class="project-title">EchoJournal</div>
+        <p class="project-desc">AI journaling app that listens back. Speak or type your entries — voice is transcribed automatically. Echo Mode reads across all your past entries and surfaces recurring themes and emotional patterns you'd never notice alone. Mood sentiment charts over time.</p>
+        <div class="project-tags">
+          <span class="project-tag">Next.js</span>
+          <span class="project-tag">Firebase</span>
+          <span class="project-tag">Gemini AI</span>
+          <span class="project-tag">Voice AI</span>
+        </div>
+        <a href="https://echo-journal-app.vercel.app/" target="_blank" class="project-link">
+          Live Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">005</div>
+        <div class="project-title">TrustBridge AI</div>
+        <p class="project-desc">AI-powered NDPR/NDPA compliance analysis platform for Nigerian businesses. Privacy policy analysis using Google Gemini, citizen action validation, and quick compliance checks with actionable remediation steps. Built with FastAPI backend.</p>
+        <div class="project-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">FastAPI</span>
+          <span class="project-tag">Gemini AI</span>
+          <span class="project-tag">Legal Tech</span>
+        </div>
+        <a href="https://trustbridge-ai.onrender.com/docs/" target="_blank" class="project-link">
+          Live Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+
+      <div class="project-card">
+        <div class="project-num">006</div>
+        <div class="project-title">Flashcard App</div>
+        <p class="project-desc">Clean, intentional study tool. Create decks, add cards, flip through them. The act of writing the card is part of the learning. Smooth flip animations, progress tracking, and a backend API — built during the same exam season it was meant to solve.</p>
+        <div class="project-tags">
+          <span class="project-tag">React</span>
+          <span class="project-tag">TypeScript</span>
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">Vite</span>
+        </div>
+        <a href="https://flashcard-app-navy-sigma.vercel.app/" target="_blank" class="project-link">
+          Live Project
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="section-inner">
+    <div class="section-label">03 — Experience</div>
+    <h2 class="reveal">Where I've<br>worked.</h2>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div class="exp-time">2024 — Present</div>
+        <div class="exp-content">
+          <div class="exp-role">Head of Technology</div>
+          <div class="exp-company">Ventics AI</div>
+          <p class="exp-desc">Leading the technical development of an AI-powered interior design platform. Built and maintained the product that has generated 300+ designs with a 4.8-star rating and 98% satisfaction rate. Responsible for architecture decisions, frontend development, and technical strategy.</p>
+        </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-time">2023 — Present</div>
+        <div class="exp-content">
+          <div class="exp-role">B.Sc. Data Science</div>
+          <div class="exp-company">University of Lagos (UNILAG)</div>
+          <p class="exp-desc">200-level Data Science student. Coursework includes statistical analysis, numerical methods, linear algebra, and machine learning fundamentals. Applying academic knowledge to real-world projects and open source contributions.</p>
+        </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="exp-time">2022 — Present</div>
+        <div class="exp-content">
+          <div class="exp-role">Independent Developer</div>
+          <div class="exp-company">Freelance</div>
+          <p class="exp-desc">Building and shipping production applications independently. Python certified with 2+ years of hands-on experience across web development, AI integration, and data science. Hackathon participant with multiple wins. Active open source contributor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-label">04 — Contact</div>
+    <div class="contact-grid">
+      <div class="contact-left">
+        <h2 class="reveal">Let's build<br>something.</h2>
+        <p class="contact-intro reveal">
+          Open to freelance projects, internships, and remote opportunities. If you have something worth building, I want to hear about it.
+        </p>
+        <div class="contact-links reveal">
+          <a href="mailto:abdullahioriola02@gmail.com" class="contact-link">
+            <span class="contact-link-label">Email</span>
+            <span class="contact-link-value">abdullahioriola02@gmail.com</span>
+          </a>
+          <a href="https://github.com/Astronomox" target="_blank" class="contact-link">
+            <span class="contact-link-label">GitHub</span>
+            <span class="contact-link-value">Astronomox</span>
+          </a>
+          <a href="https://www.linkedin.com/in/abdullahi-oriola-63459b2a7/" target="_blank" class="contact-link">
+            <span class="contact-link-label">LinkedIn</span>
+            <span class="contact-link-value">abdullahi-oriola</span>
+          </a>
+          <a href="https://x.com/Astro2theworld" target="_blank" class="contact-link">
+            <span class="contact-link-label">Twitter / X</span>
+            <span class="contact-link-value">@Astro2theworld</span>
+          </a>
+          <a href="https://www.fiverr.com/abdullahi_ori" target="_blank" class="contact-link">
+            <span class="contact-link-label">Fiverr</span>
+            <span class="contact-link-value">@abdullahi_ori</span>
+          </a>
+        </div>
+      </div>
+      <div class="contact-right reveal">
+        <form id="contactForm">
+          <div class="form-group">
+            <label class="form-label" for="name">Name</label>
+            <input class="form-input" type="text" id="name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input" type="email" id="email" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">Message</label>
+            <textarea class="form-textarea" id="message" placeholder="Tell me about your project..." required></textarea>
+          </div>
+          <button type="submit" class="form-submit">Send Message →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    © 2025 Abdullahi Oriola Adeola — Built with precision.
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/Astronomox" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/abdullahi-oriola-63459b2a7/" target="_blank">LinkedIn</a>
+    <a href="https://www.fiverr.com/abdullahi_ori" target="_blank">Fiverr</a>
+  </div>
+</footer>
+
+<script>
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cursor.style.left=mx+'px';cursor.style.top=my+'px';
+});
+function animRing(){
+  rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+document.querySelectorAll('a,button,.project-card,.contact-link').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    ring.style.width='56px';ring.style.height='56px';ring.style.opacity='0.3';
+  });
+  el.addEventListener('mouseleave',()=>{
+    ring.style.width='32px';ring.style.height='32px';ring.style.opacity='0.5';
+  });
+});
+
+const nav = document.getElementById('navbar');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled',window.scrollY>40);
+});
+
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:0.1,rootMargin:'0px 0px -60px 0px'});
+reveals.forEach(el=>obs.observe(el));
+
+document.getElementById('contactForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const btn=e.target.querySelector('.form-submit');
+  btn.textContent='Sent ✓';
+  btn.style.background='var(--green)';
+  btn.style.color='var(--text)';
+  e.target.reset();
+  setTimeout(()=>{
+    btn.textContent='Send Message →';
+    btn.style.background='';btn.style.color='';
+  },3000);
+});
+</script>
+</body>
+</html>
